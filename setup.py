@@ -8,7 +8,7 @@ setup(
     author='Levin Eric Zimmermann',
     author_email='levin-eric.zimmermann@folkwang-uni.de',
     url='https://github.com/uummoo/formalgrammar',
-    packages=['formalgrammar', 'formalgrammar.grammar'],
+    packages=['formalgrammar', 'formalgrammar.grammar', 'formalgrammar.utils'],
     setup_requires=[''],
     tests_require=['nosetests'],
     install_requires=[''],
