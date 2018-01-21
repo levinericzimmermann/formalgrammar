@@ -1,4 +1,4 @@
-from formalgrammar import grammar
+from formalgrammar.grammar import grammar
 import unittest
 
 
