@@ -41,6 +41,10 @@ class Grammar:
             return symbol,
 
     def create(self, state):
+        def res_generator(result):
+            for gen in result:
+                for solution in gen:
+                    yield solution
         length_state = len(state)
         maxtokensize = max(tuple(len(r.sym0) for r in self.rules))
         maxtokensize = min((maxtokensize, length_state))
@@ -56,17 +60,13 @@ class Grammar:
                 possible_partitions)
         result = []
         for part in possible_partitions:
-            solutions = []
-            for sub in part:
-                ind0 = len(sub) - 1
-                ind1 = sub[0]
-                sol = complete_solutions[ind0][ind1]
-                solutions.append(sol)
+            solutions = (complete_solutions[len(sub) - 1][sub[0]]
+                         for sub in part)
             possible_solutions = itertools.product(*solutions)
             possible_solutions = (functools.reduce(
                 operator.add, sol) for sol in possible_solutions)
             result.append(possible_solutions)
-        return functools.reduce(operator.add, (tuple(gen) for gen in result))
+        return res_generator(result)
 
     def mk_inverse_grammar(self):
         """
@@ -84,7 +84,9 @@ class LSystem(Grammar):
         def generator(state):
             while True:
                 yield state
-                state = self.create(state)[0]
+                for s in self.create(state):
+                    state = tuple(s)
+                    break
         return generator(start)
 
     def walk_to(self, start, depth, with_path=True):
