@@ -48,11 +48,11 @@ class Grammar:
         length_state = len(state)
         maxtokensize = max(tuple(len(r.sym0) for r in self.rules))
         maxtokensize = min((maxtokensize, length_state))
-        complete_solutions = []
+        all_solutions = []
         for tokensize in range(maxtokensize):
             zipped = zip(*[state[i:] for i in range(tokensize + 1)])
             solutions = [self.substitute(symbol) for symbol in zipped]
-            complete_solutions.append(solutions)
+            all_solutions.append(solutions)
         possible_partitions = utils.partition(list(range(length_state)))
         possible_partitions = utils.filter_subsets(possible_partitions,
                                                    maxtokensize + 1)
@@ -60,7 +60,7 @@ class Grammar:
                 possible_partitions)
         result = []
         for part in possible_partitions:
-            solutions = (complete_solutions[len(sub) - 1][sub[0]]
+            solutions = (all_solutions[len(sub) - 1][sub[0]]
                          for sub in part)
             possible_solutions = itertools.product(*solutions)
             possible_solutions = (functools.reduce(
@@ -68,7 +68,7 @@ class Grammar:
             result.append(possible_solutions)
         return res_generator(result)
 
-    def mk_inverse_grammar(self):
+    def inverse(self):
         """
         Return a new Grammar - object, whose rules are upside down
         (left side goes to the right side and vice versa).
@@ -83,7 +83,10 @@ class LSystem(Grammar):
     def walk(self, start):
         def generator(state):
             while True:
-                yield state
+                if state:
+                    yield state
+                else:
+                    break
                 for s in self.create(state):
                     state = tuple(s)
                     break
